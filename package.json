@@ -1,0 +1,39 @@
+{
+  "name": "spine-relations",
+  "version": "1.0.0",
+  "description": "Relations and async relations for Spine models",
+  "main": "./relations.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "./node_modules/iced-coffee-script/bin/coffee --bare --map --runtime node -o ./ -c src/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/doublerebel/spine-relations.git"
+  },
+  "keywords": [
+    "spine",
+    "relations",
+    "relational",
+    "orm",
+    "async",
+    "model",
+    "spinejs"
+  ],
+  "author": "doublerebel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/doublerebel/spine-relations/issues"
+  },
+  "homepage": "https://github.com/doublerebel/spine-relations#readme",
+  "devDependencies": {
+    "iced-coffee-script": "^108.0.9"
+  },
+  "dependencies": {
+    "iced-runtime": "^1.0.3",
+    "spine": "^1.6.2"
+  }
+}
