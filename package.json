@@ -1,6 +1,6 @@
 {
   "name": "spine-relations",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Relations and async relations for Spine models",
   "main": "./relations.js",
   "directories": {

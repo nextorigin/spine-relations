@@ -13,6 +13,10 @@ arraysMatch = (arrays...) ->
   return false for array in arrays when (String array) isnt match
   true
 
+isEmpty = (obj) ->
+  return false for own key of obj
+  true
+
 
 class Collection extends Relations.Classes.BaseCollection
   select: (cb) ->
@@ -91,6 +95,8 @@ AsyncHelpers =
         diff[key] = value unless arraysMatch origkey, value
       else
         diff[key] = value unless origkey is value
+
+    return null if isEmpty diff
     diff
 
 
