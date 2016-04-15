@@ -1,12 +1,7 @@
 Spine     = require "spine"
+errify    = require "errify"
 Relations = require "./relations"
 
-
-errify = (errCb) -> (continueCb) -> (err, args...) ->
-  if err?
-    errCb err
-  else
-    continueCb args...
 
 arraysMatch = (arrays...) ->
   match = String arrays.pop()
@@ -33,19 +28,10 @@ class Instance extends Relations.Classes.Instance
       @model.find @record[@fkey], cb
 
   update: (value, cb = ->) ->
-    esc = errify cb
+    ideally = errify cb
     unless value instanceof @model
-      value = new @model(value)
-    value.save if value.isNew()
-
-    @record[@fkey] = value and value.id
-    @record.save cb
-
-  update: (value, cb = ->) ->
-    esc = errify cb
-    unless value instanceof @model
-      value = new @model(value)
-    await value.save esc defer() if value.isNew()
+      value = new @model value
+    await value.save ideally defer() if value.isNew()
 
     @record[@fkey] = value and value.id
     @record.save cb
@@ -56,28 +42,25 @@ Async =
     parent = @
     unless name?
       model = loadModel model, parent
-      name = model.className.toLowerCase()
-      name = singularize underscore name
+      name  = model.className.toLowerCase()
+      name  = singularize underscore name
     fkey ?= "#{name}_id"
 
     association = (record) ->
       model = loadModel model, parent
-      new Instance(
-        name: name, model: model,
-        record: record, fkey: fkey
-      )
+      new Instance {name, model, record, fkey}
 
     @::[name] = (value, cb = ->) ->
       if typeof value is "function"
-        cb = value
+        cb    = value
         value = null
 
       if value?
         association(@).update value, cb
       else
-        association(@).find(cb)
+        association(@).find cb
 
-    @attributes.push(fkey)
+    @attributes.push fkey
 
   findCached: -> Spine.Model.find.apply this, arguments
 

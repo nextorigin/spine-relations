@@ -1,6 +1,6 @@
 {
   "name": "spine-relations",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Relations and async relations for Spine models",
   "main": "./relations.js",
   "directories": {
@@ -33,6 +33,7 @@
     "iced-coffee-script": "^108.0.9"
   },
   "dependencies": {
+    "errify": "^1.0.0",
     "iced-runtime": "^1.0.3",
     "spine": "^1.6.2"
   }

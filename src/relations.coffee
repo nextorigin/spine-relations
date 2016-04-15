@@ -13,8 +13,8 @@ class BaseCollection extends Spine.Class
   last: ->
     @all()[-1..]
 
-  create: (record) ->
-    newRecord = @model.create(record)
+  create: (record, options) ->
+    newRecord = @model.create record, options
     (@add newRecord) if newRecord
 
 
@@ -32,7 +32,7 @@ class Collection extends BaseCollection
 
   find: (id) ->
     records = @select (rec) =>
-      rec.id + '' is id + ''
+      "#{rec.id}" is "#{id}"
     throw('Unknown record') unless records[0]
     records[0]
 
@@ -141,21 +141,16 @@ class Instance extends Spine.Class
     for key, value of options
       @[key] = value
 
-  find: (cb = ->) ->
-    unless @record[@fkey]
-      cb "no foreign key"
-      false
-    else
-      @model.find @record[@fkey], cb
+  find: ->
+    @model.find @record[@fkey]
 
-  update: (value, cb = ->) ->
-    esc = errify cb
+  update: (value) ->
     unless value instanceof @model
       value = new @model(value)
     value.save if value.isNew()
 
     @record[@fkey] = value and value.id
-    @record.save cb
+    @record.save()
 
 
 class Singleton extends Spine.Class
@@ -181,7 +176,7 @@ underscore = (str) ->
   str.replace(/::/g, '/')
      .replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2')
      .replace(/([a-z\d])([A-Z])/g, '$1_$2')
-     .replace(/-/g, '_')
+     .replace(/(-|\.)/g, '_')
      .toLowerCase()
 
 loadModel = (model, parent) ->
@@ -259,15 +254,11 @@ Relations =
         record: record, fkey: fkey
       )
 
-    @::[name] = (value, cb = ->) ->
-      if typeof value is "function"
-        cb = value
-        value = null
-
+    @::[name] = (value) ->
       if value?
-        association(@).update value, cb
+        association(@).update(value)
       else
-        association(@).find(cb)
+        association(@).find()
 
     @attributes.push(fkey)
 
