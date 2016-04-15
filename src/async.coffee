@@ -1,6 +1,7 @@
-Spine     = require "spine"
-errify    = require "errify"
-Relations = require "./relations"
+Spine       = require "spine"
+errify      = require "errify"
+Relations   = require "./relations"
+{loadModel} = Relations
 
 
 arraysMatch = (arrays...) ->
@@ -37,7 +38,21 @@ class Instance extends Relations.Classes.Instance
     @record.save cb
 
 
+class Singleton extends Relations.Classes.Singleton
+  find: (cb = ->) ->
+    @record.id and @model.findByAttribute @fkey, @record.id, cb
+
+  update: (value, cb = ->) ->
+    unless value instanceof @model
+      value = @model.fromJSON(value)
+
+    value[@fkey] = @record.id
+    value.save cb
+
+
 Async =
+  findCached: -> Spine.Model.find.apply this, arguments
+
   belongsTo: (model, name, fkey) ->
     parent = @
     unless name?
@@ -62,7 +77,22 @@ Async =
 
     @attributes.push fkey
 
-  findCached: -> Spine.Model.find.apply this, arguments
+  hasOne: (model, name, fkey) ->
+    parent = @
+    unless name?
+      model = loadModel model, parent
+      name = model.className.toLowerCase()
+      name = singularize underscore name
+    fkey ?= "#{underscore(@className)}_id"
+
+    association = (record) ->
+      model = loadModel model, parent
+      new Singleton {name, model, record, fkey}
+
+    @::[name] = (value, cb) ->
+      association(@).update value, cb if value?
+      association(@).find cb
+
 
 
 AsyncHelpers =
