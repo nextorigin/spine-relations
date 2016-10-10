@@ -90,8 +90,11 @@ Async =
       new Singleton {name, model, record, fkey}
 
     @::[name] = (value, cb) ->
-      association(@).update value, cb if value?
-      association(@).find cb
+      if value?
+        association(@).update value, cb
+      else
+        association(@).find cb
+
 
 
 
