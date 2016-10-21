@@ -48,17 +48,15 @@ class Collection extends BaseCollection
       @associated(rec) and cb(rec)
 
   refresh: (values) ->
-    delete @model.records[record.id] for record in @all()
-    records = @model.fromJSON(values)
+    for record in @all()
+      delete @model.irecords[record.id]
+      for match, i in @model.records when match.id is record.id
+        @model.records.splice(i, 1)
+        break
 
-    records = [records] unless isArray(records)
-
-    for record in records
-      record.newRecord = false
-      record[@fkey] = @record.id
-      @model.records[record.id] = record
-
-    @model.trigger('refresh', @model.cloneArray(records))
+    values = [values] unless Array.isArray(values)
+    record[@fkey] = @record.id for record in values
+    @model.refresh values
 
   # Private
 
