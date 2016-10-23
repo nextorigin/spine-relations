@@ -167,23 +167,7 @@ class Singleton extends Spine.Class
     value.save()
 
 
-singularize = (str) ->
-  str.replace(/s$/, '')
-
-underscore = (str) ->
-  str.replace(/::/g, '/')
-     .replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2')
-     .replace(/([a-z\d])([A-Z])/g, '$1_$2')
-     .replace(/(-|\.)/g, '_')
-     .toLowerCase()
-
-loadModel = (model, parent) ->
-  if typeof model is 'string'
-    model = require(model)
-    model.bind 'error', (record, msg) => parent.trigger 'error', record, msg, model.className
-    if typeof model.loadSpineDB is 'function'
-      model.bindSpineDB().fetch()
-  model
+{singularize, underscore, loadModel} = require "./helpers"
 
 
 Relations =
@@ -339,6 +323,5 @@ Relations.Classes     =
   M2MCollection:        M2MCollection
   Instance:             Instance
   Singleton:            Singleton
-Relations.loadModel   = loadModel
 Spine.Model.Relations = Relations
 module?.exports       = Relations

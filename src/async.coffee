@@ -1,7 +1,8 @@
 Spine       = require "spine"
 errify      = require "errify"
 Relations   = require "./relations"
-{loadModel} = Relations
+helpers     = require "./helpers"
+{singularize, underscore, loadModel} = helpers
 
 
 arraysMatch = (arrays...) ->
